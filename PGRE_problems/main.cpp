@@ -13,6 +13,8 @@
 #include <vector>
 #include <numeric>
 #include <time.h>
+#include <random>
+#include <algorithm>
 using namespace std;
 
 const string DIR = "/Users/jameskwon/Documents/GRE/";
@@ -123,9 +125,11 @@ int main(){
         vector<int> problem_no(size);
         iota(begin(problem_no),end(problem_no),0);
         
+        shuffle(begin(problem_no), end(problem_no),default_random_engine());
+        
         do{
-            cout << "Question: " << problems.at(problem_idx) << endl;
-            string choice_str = choices.at(problem_idx);
+            cout << "Question: " << problems.at(problem_no.at(problem_idx)) << endl;
+            string choice_str = choices.at(problem_no.at(problem_idx));
             string user_answer;
         
             if (choice_str != "None"){
@@ -133,7 +137,7 @@ int main(){
                 cout << "Choose your answer: ";
                 getline(cin, user_answer);
                 char true_answer, user_answer_char;
-                stringstream(answers.at(problem_idx)) >> true_answer;
+                stringstream(answers.at(problem_no.at(problem_idx))) >> true_answer;
                 stringstream(user_answer) >> user_answer_char;
                 true_answer = toupper(true_answer);
                 user_answer_char = toupper(user_answer_char);
@@ -143,7 +147,7 @@ int main(){
             else{
                 cout << "Write your answer: ";
                 getline(cin, user_answer);
-                cout << "Answer: " << answers.at(problem_idx) << endl;
+                cout << "Answer: " << answers.at(problem_no.at(problem_idx)) << endl;
                 cout << "Correct? [Y/N]" << endl;
                 
                 string dummy;
