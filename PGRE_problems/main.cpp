@@ -18,11 +18,13 @@
 using namespace std;
 
 const string DIR = "/Users/jameskwon/Documents/GRE/";
-const string F_NAME = "PS.txt";
+const string F_NAME_CLASSICAL_MECHANICS = "classical_mechanics.txt";
+const string F_NAME_EM = "EM.txt";
+const string F_NAME_WAVE_OPTICS = "wave_optics.txt";
 const string LOG_NAME = "PS_log.log";
 const int MAX_N_CHOICE = 5;
 
-void write_log(int &n_correct, int &n_solved){
+void write_log(int &n_correct, int &n_solved, string &subject){
     ofstream log_file;
     log_file.open(DIR+LOG_NAME,ios::app);
     if (log_file){
@@ -30,6 +32,7 @@ void write_log(int &n_correct, int &n_solved){
         time_t raw_time;
         time (&raw_time);
         log_file << ctime(&raw_time) << endl;
+        log_file << "Subject: " << subject << endl;
         log_file << "Score: " << 100* static_cast<float>(n_correct) / n_solved << "(" << n_correct << "/" << n_solved << ")" << endl;
         log_file << setfill('-') << setw(20) << '-' << endl;
         
@@ -41,15 +44,89 @@ void write_log(int &n_correct, int &n_solved){
     return;
 }
 
-bool read_PS(const string &dir, const string &f_name, vector<string> &problems, vector<string> &choices, vector<string> &answers, int &n_total){
+bool read_PS(string &subject, vector<string> &problems, vector<string> &choices, vector<string> &answers, int &n_total){
     bool _open = false;
+    string f_name, problem_type;
+    int subject_no, type_no;
+    bool valid_input = false;
+    bool memorization_only = false;
+    bool problem_solving_only = false;
+    
+    cout << setfill('-') << setw(10) << "-";
+    cout << "Choose subject";
+    cout << setfill('-') << setw(8) << "-" << endl;
+    cout << "1. Classical Mechanics" << endl;
+    cout << "2. E&M" << endl;
+    cout << "3. Wave and Optics" << endl;
+    
+    do{
+        getline(cin, subject);
+        stringstream(subject) >> subject_no;
+        
+        if ((subject_no > 3) || (subject_no < 1))
+            cout << "Choose correct choice" << endl;
+        else
+            valid_input = true;
+    }while(!valid_input);
+    
+    switch(subject_no){
+        case 1:
+            subject = "Classical mechanics";
+            f_name = F_NAME_CLASSICAL_MECHANICS;
+            break;
+        case 2:
+            subject = "E&M";
+            f_name = F_NAME_EM;
+            break;
+        case 3:
+            subject = "Wave & Optics";
+            f_name = F_NAME_WAVE_OPTICS;
+            break;
+    }
+    valid_input = false;
+    
+    cout << setfill('-') << setw(10) << "-";
+    cout << "Select type";
+    cout << setfill('-') << setw(11) << "-" << endl;
+    cout << "1. Memorization only" << endl;
+    cout << "2. Problem solving only" << endl;
+    cout << "3. Both" << endl;
+    cout << "Unimplemented yet!" << endl;
+    
+    do{
+        getline(cin,problem_type);
+        stringstream(problem_type) >> type_no;
+        if ((type_no > 3) || (type_no < 1))
+            cout << "Choose correct choice" << endl;
+        else
+            valid_input = true;
+    
+    }while(!valid_input);
+    
+    switch(type_no){
+        case 1:
+            memorization_only = true;
+            problem_solving_only = false;
+            break;
+        case 2:
+            memorization_only = false;
+            problem_solving_only = true;
+            break;
+        case 3:
+            memorization_only = true;
+            problem_solving_only = true;
+            break;
+    }
+    
+    
+    
     cout << setfill('-') << setw(10) << "-";
     cout << "Opening file";
     cout << setfill('-') << setw(10) << "-" << endl;
-    cout << "File directory: " << DIR << F_NAME << endl;
+    cout << "File directory: " << DIR << f_name << endl;
     
     ifstream PS;
-    PS.open(DIR+F_NAME, ios::in);
+    PS.open(DIR+f_name, ios::in);
     
     if(PS){
         string _line;
@@ -74,6 +151,7 @@ bool read_PS(const string &dir, const string &f_name, vector<string> &problems, 
                         size_t pos = content.find(choice_idx_str);
                         if(pos == string::npos){
                             write = true;
+                            
                             break;
                         }
                         choice_idx_str[0]++;
@@ -83,8 +161,9 @@ bool read_PS(const string &dir, const string &f_name, vector<string> &problems, 
                         total_choice += each_choice+"\n";
                     }
                     
-                    if(write)
+                    if(write){
                         total_choice = "None";
+                    }
                     else
                         total_choice.erase(total_choice.find_last_of("\n"));
                     choices.push_back(total_choice);
@@ -108,13 +187,13 @@ bool read_PS(const string &dir, const string &f_name, vector<string> &problems, 
 int main(){
     //Some running variables
     bool correct,cont, open,valid(false);
-    string cont_str;
+    string cont_str, subject;
     char cont_char;
     int n_correct(0), n_total(0), n_solved_total(0);
     vector <string> problems, choices, answers;
 
     //Open files
-    open = read_PS(DIR, F_NAME,problems, choices, answers, n_total);
+    open = read_PS(subject,problems, choices, answers, n_total);
     
     if(open){
         unsigned short int problem_idx = 0;
@@ -187,15 +266,15 @@ int main(){
             }
             valid = false;
         }while(cont && (n_solved_total < n_total));
+        
+        cout << setfill('-') << setw(11) << '-';
+        cout << "Statistics";
+        cout << setfill('-') << setw(10) << '-' << endl;
+        cout << "Correct/Solved: " << n_correct << "/" << n_solved_total << endl;
+        cout << fixed << showpoint << setprecision(2) << 100* static_cast<float>(n_correct)/n_solved_total << "%" << endl;
+        
+        write_log(n_correct,n_solved_total, subject);
     }
-    
-    cout << setfill('-') << setw(11) << '-';
-    cout << "Statistics";
-    cout << setfill('-') << setw(10) << '-' << endl;
-    cout << "Correct/Solved: " << n_correct << "/" << n_solved_total << endl;
-    cout << fixed << showpoint << setprecision(2) << 100* static_cast<float>(n_correct)/n_solved_total << "%" << endl;
-    
-    write_log(n_correct,n_solved_total);
     
     return 0;
 }
