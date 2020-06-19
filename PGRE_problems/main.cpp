@@ -77,6 +77,7 @@ bool read_PS(string &subject, vector<string> &problems, vector<string> &choices,
         case 2:
             subject = "E&M";
             f_name = F_NAME_EM;
+            cout << "Note: Electric dipoles, matter effects, EM waves have not been included yet. It will be included in future" << endl;
             break;
         case 3:
             subject = "Wave & Optics";
@@ -151,7 +152,6 @@ bool read_PS(string &subject, vector<string> &problems, vector<string> &choices,
                         size_t pos = content.find(choice_idx_str);
                         if(pos == string::npos){
                             write = true;
-                            
                             break;
                         }
                         choice_idx_str[0]++;
@@ -207,7 +207,7 @@ int main(){
         shuffle(begin(problem_no), end(problem_no),default_random_engine());
         
         do{
-            cout << "Question: " << problems.at(problem_no.at(problem_idx)) << endl;
+            cout << (n_solved_total + 1) << "/" << n_total << ": " << problems.at(problem_no.at(problem_idx)) << endl;
             string choice_str = choices.at(problem_no.at(problem_idx));
             string user_answer;
         
@@ -228,18 +228,26 @@ int main(){
                 getline(cin, user_answer);
                 cout << "Answer: " << answers.at(problem_no.at(problem_idx)) << endl;
                 cout << "Correct? [Y/N]" << endl;
-                
-                string dummy;
-                getline(cin,dummy);
-                if (dummy == "Y" || dummy == "y"){
-                    correct = true;
-                }
-                else
-                    correct = false;
+                bool invalid = true;
+                do{
+                    string dummy;
+                    getline(cin,dummy);
+                    
+                    if (dummy == "Y" || dummy == "y"){
+                        correct = true;
+                        invalid = false;
+                    }
+                    else if (dummy == "N" || dummy == "n"){
+                        correct = false;
+                        invalid = false;
+                    }
+                    else{
+                        cout << "Type either Y or N" << endl;
+                        invalid = true;
+                    }
+                }while(invalid);
             }
             problem_idx++;
-            
-            
             
             n_correct += correct;
             n_solved_total++;
@@ -267,13 +275,25 @@ int main(){
             valid = false;
         }while(cont && (n_solved_total < n_total));
         
-        cout << setfill('-') << setw(11) << '-';
+        cout << setfill('-') << setw(10) << '-';
         cout << "Statistics";
-        cout << setfill('-') << setw(10) << '-' << endl;
+        cout << setfill('-') << setw(11) << '-' << endl;
         cout << "Correct/Solved: " << n_correct << "/" << n_solved_total << endl;
         cout << fixed << showpoint << setprecision(2) << 100* static_cast<float>(n_correct)/n_solved_total << "%" << endl;
         
-        write_log(n_correct,n_solved_total, subject);
+        
+        string write_log_str;
+        char write_log_char;
+    
+        
+        cout << setfill('-') << setw(10) << '-';
+        cout << "Writing log";
+        cout << setfill('-') << setw(10) << '-' << endl;
+        cout << "Write log? [Y/N]" << endl;
+        getline(cin, write_log_str);
+        stringstream(write_log_str) >> write_log_char;
+        if (write_log_char == 'Y' || write_log_char == 'y')
+            write_log(n_correct,n_solved_total, subject);
     }
     
     return 0;
