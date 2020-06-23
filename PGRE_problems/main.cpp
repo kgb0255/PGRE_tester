@@ -21,6 +21,7 @@ const string DIR = "/Users/jameskwon/Documents/GRE/";
 const string F_NAME_CLASSICAL_MECHANICS = "classical_mechanics.txt";
 const string F_NAME_EM = "EM.txt";
 const string F_NAME_WAVE_OPTICS = "wave_optics.txt";
+const string F_NAME_STAT_THERMO = "stat_thermo.txt";
 const string LOG_NAME = "PS_log.log";
 const int MAX_N_CHOICE = 5;
 
@@ -58,12 +59,13 @@ bool read_PS(string &subject, vector<string> &problems, vector<string> &choices,
     cout << "1. Classical Mechanics" << endl;
     cout << "2. E&M" << endl;
     cout << "3. Wave and Optics" << endl;
+    cout << "4. Statistical Mechanics and Thermodynamics" << endl;
     
     do{
         getline(cin, subject);
         stringstream(subject) >> subject_no;
         
-        if ((subject_no > 3) || (subject_no < 1))
+        if ((subject_no > 4) || (subject_no < 1))
             cout << "Choose correct choice" << endl;
         else
             valid_input = true;
@@ -82,6 +84,10 @@ bool read_PS(string &subject, vector<string> &problems, vector<string> &choices,
         case 3:
             subject = "Wave & Optics";
             f_name = F_NAME_WAVE_OPTICS;
+            break;
+        case 4:
+            subject = "Statistical Mechanics and Thermodynamics";
+            f_name = F_NAME_STAT_THERMO;
             break;
     }
     valid_input = false;
